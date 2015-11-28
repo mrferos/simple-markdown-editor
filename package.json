@@ -1,7 +1,7 @@
 {
-  "name": "electron-quick-start",
-  "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "name": "Simple Markdown Editor",
+  "version": "1.0.0-Alpha",
+  "description": "A very simple markdown editor",
   "main": "main.js",
   "scripts": {
     "start": "electron main.js"
@@ -12,17 +12,13 @@
   },
   "keywords": [
     "Electron",
-    "quick",
-    "start",
-    "tutorial"
+    "markdown",
+    "editor"
   ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
-  "bugs": {
-    "url": "https://github.com/atom/electron-quick-start/issues"
-  },
-  "homepage": "https://github.com/atom/electron-quick-start#readme",
+  "author": "Andres Galindo",
+  "license": "MIT",
   "devDependencies": {
+    "electron-packager": "*",
     "electron-prebuilt": "^0.35.0"
   }
 }
