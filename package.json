@@ -1,5 +1,5 @@
 {
-  "name": "Simple Markdown Editor",
+  "name": "simple-markdown-editor",
   "version": "1.0.0-Alpha",
   "description": "A very simple markdown editor",
   "main": "main.js",
