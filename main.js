@@ -1,6 +1,9 @@
 var app = require('app');  // Module to control application life.
 var BrowserWindow = require('browser-window');  // Module to create native browser window.
 var globalShortcut = require('global-shortcut');
+var fs = require('fs');
+var pathMod = require('path');
+const dialog = require('electron').dialog;
 
 // Report crashes to our server.
 require('crash-reporter').start();
@@ -14,25 +17,64 @@ var captureShortcuts = function() {
   globalShortcut.register('Ctrl+N', function() {
     createWindow();
   });
+
+  globalShortcut.register('Ctrl+Shift+N', function() {
+    file = dialog.showOpenDialog({
+      properties: ['openFile'],
+      filters: [
+        {
+          name: 'Markdown File (*.md)',
+          extensions: ['md']
+        },
+        {
+          name: 'All Files',
+          extensions: ['*']
+        }
+      ]
+    })
+
+    if (file !== undefined) {
+      createWindow(file[0]);
+    }
+  });
 };
 
-var createWindow = function() {
-  // Create the browser window.
-  mainWindow = new BrowserWindow({width: 1200, height: 600});
+var createWindow = function(file) {
 
-  // and load the index.html of the app.
-  mainWindow.loadUrl('file://' + __dirname + '/editor/index.html');
+  defaultFile = __dirname + '/editor/default-content.md';
+  file = file === undefined ? defaultFile : file;
+  isDefault = file === defaultFile;
 
-  // Emitted when the window is closed.
-  mainWindow.on('closed', function() {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    mainWindow = null;
+  fs.open(file, 'r', function(err, fileToRead){
+    if (!err){
+      fs.readFile(file, {encoding: 'utf-8'}, function(err,data){
+        if (!err){
+          // Create the browser window.
+          mainWindow = new BrowserWindow({width: 1200, height: 600});
+          mainWindow.on('closed', function() {
+            mainWindow = null;
+          });
+
+          mainWindow.webContents.on('did-finish-load', function() {
+            mainWindow.webContents.send('markdown-content', JSON.stringify({
+              filePath: file,
+              fileName: pathMod.basename(file),
+              contents: data,
+              isDefault: isDefault
+            }));
+          });
+
+          mainWindow.webContents.openDevTools();
+          mainWindow.loadURL('file://' + __dirname + '/editor/index.html');
+          windows.push(mainWindow);
+        }else{
+          console.log(err);
+        }
+      });
+    }else{
+      console.log(err);
+    }
   });
-
-  //mainWindow.webContents.openDevTools();
-  windows.push(mainWindow);
 };
 
 
